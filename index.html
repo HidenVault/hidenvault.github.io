@@ -16,7 +16,6 @@
 <div class="card" id="auth">
   <input id="pw" type="password" placeholder="Password">
   <button class="main" onclick="unlockWithPassword()">Unlock</button>
-
   <div class="alt">
     <button onclick="registerPasskey()">➕ パスキー登録</button>
     <button onclick="unlockWithPasskey()">🔑 パスキー</button>
@@ -24,24 +23,28 @@
   <p id="msg"></p>
 </div>
 
-<div class="card" id="vault" hidden>
-  <div class="topbar">
-    <select id="folderSelect" onchange="render()"></select>
-    <input id="search" placeholder="検索…" oninput="render()">
-  </div>
+<div id="vault" hidden class="layout">
+  <aside>
+    <h3>📂 Folders</h3>
+    <ul id="folderList"></ul>
 
-  <input type="file" id="file">
-  <input id="newFolder" placeholder="新規フォルダ名">
-  <button onclick="addFolder()">📂 フォルダ作成</button>
-  <button class="main" onclick="save()">＋ 保存</button>
+    <input id="newFolder" placeholder="＋ フォルダ名">
+    <button onclick="addFolder()">作成</button>
 
-  <div class="export">
-    <button onclick="exportAll()">📦 全部ZIP</button>
+    <hr>
     <button onclick="showTrash()">🗑 ゴミ箱</button>
-  </div>
+    <button onclick="exportAll()">📦 全部ZIP</button>
+    <button class="danger" onclick="lock()">🔒 ロック</button>
+  </aside>
 
-  <ul id="list"></ul>
-  <button class="danger" onclick="lock()">🔒 ロック</button>
+  <main>
+    <div class="toolbar">
+      <input id="search" placeholder="検索..." oninput="render()">
+      <input type="file" id="file">
+      <button onclick="save()">＋ 保存</button>
+    </div>
+    <ul id="list" class="grid"></ul>
+  </main>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -49,5 +52,16 @@
 <script src="db.js"></script>
 <script src="webauthn.js"></script>
 <script src="app.js"></script>
+
+<script>
+function toggleTheme(){
+  const t=document.body.dataset.theme==="dark"?"light":"dark";
+  document.body.dataset.theme=t;
+  localStorage.setItem("theme",t);
+  themeBtn.textContent=t==="dark"?"🌙":"☀️";
+}
+const saved=localStorage.getItem("theme")||"dark";
+document.body.dataset.theme=saved;
+</script>
 </body>
 </html>
