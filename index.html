@@ -1,4 +1,4 @@
-<!doctype html>
+<<!doctype html>
 <html lang="ja">
 <head>
 <meta charset="utf-8">
@@ -16,6 +16,7 @@
 <div class="card" id="auth">
   <input id="pw" type="password" placeholder="Password">
   <button class="main" onclick="unlockWithPassword()">Unlock</button>
+
   <div class="alt">
     <button onclick="registerPasskey()">➕ パスキー登録</button>
     <button onclick="unlockWithPasskey()">🔑 パスキー</button>
@@ -26,14 +27,22 @@
 <div class="card" id="vault" hidden>
   <input type="file" id="file">
   <button class="main" onclick="save()">＋ 保存</button>
+
+  <div class="export">
+    <button onclick="exportAll()">📦 全部ZIP</button>
+  </div>
+
   <ul id="list"></ul>
+
   <button class="danger" onclick="lock()">🔒 ロック</button>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="crypto.js"></script>
 <script src="db.js"></script>
 <script src="webauthn.js"></script>
 <script src="app.js"></script>
+
 <script>
 function toggleTheme(){
   const t=document.body.dataset.theme==="dark"?"light":"dark";
