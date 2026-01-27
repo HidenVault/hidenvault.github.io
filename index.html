@@ -8,27 +8,41 @@
 <title>Hidden Vault</title>
 </head>
 <body>
+<header>
+  <h1>Hidden Vault</h1>
+  <button id="themeBtn" onclick="toggleTheme()">🌙</button>
+</header>
+
 <div class="card" id="auth">
-  <h2>🔒 Hidden Vault</h2>
   <input id="pw" type="password" placeholder="Password">
-  <button onclick="unlockWithPassword()">Unlock</button>
-  <hr>
-  <button onclick="registerPasskey()">➕ パスキー登録</button>
-  <button onclick="unlockWithPasskey()">🔑 パスキーで解除</button>
+  <button class="main" onclick="unlockWithPassword()">Unlock</button>
+  <div class="alt">
+    <button onclick="registerPasskey()">➕ パスキー登録</button>
+    <button onclick="unlockWithPasskey()">🔑 パスキー</button>
+  </div>
   <p id="msg"></p>
 </div>
 
 <div class="card" id="vault" hidden>
-  <h2>📁 Vault</h2>
   <input type="file" id="file">
-  <button onclick="save()">Save</button>
+  <button class="main" onclick="save()">＋ 保存</button>
   <ul id="list"></ul>
-  <button onclick="lock()">Lock</button>
+  <button class="danger" onclick="lock()">🔒 ロック</button>
 </div>
 
 <script src="crypto.js"></script>
 <script src="db.js"></script>
 <script src="webauthn.js"></script>
 <script src="app.js"></script>
+<script>
+function toggleTheme(){
+  const t=document.body.dataset.theme==="dark"?"light":"dark";
+  document.body.dataset.theme=t;
+  localStorage.setItem("theme",t);
+  themeBtn.textContent=t==="dark"?"🌙":"☀️";
+}
+const saved=localStorage.getItem("theme")||"dark";
+document.body.dataset.theme=saved;
+</script>
 </body>
 </html>
