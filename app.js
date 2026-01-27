@@ -1,29 +1,32 @@
-let PASSWORD = "1234";
+let MASTER=null;
 
-function unlock(){
-  const pin = document.getElementById("pin").value;
-  if(pin===PASSWORD){
-    lock.hidden=true;
-    vault.hidden=false;
-    load();
-  } else alert("Wrong");
+function openVault(){ auth.hidden=true; vault.hidden=false; load(); }
+function lock(){ vault.hidden=true; auth.hidden=false; MASTER=null; }
+
+async function unlockWithPassword(){
+  MASTER=pw.value;
+  try{ await load(); openVault(); }catch{ msg.textContent="Wrong password"; }
 }
 
-function save(){
-  const f = file.files[0];
-  const r = new FileReader();
-  r.onload = ()=> saveFile({name:f.name,data:r.result});
-  r.readAsDataURL(f);
+async function save(){
+  const f=file.files[0]; if(!f) return;
+  const bytes=new Uint8Array(await f.arrayBuffer());
+  const encPkg=await encryptBytes(bytes, MASTER);
+  put({name:f.name,pkg:encPkg});
+  load();
 }
 
-function load(){
-  const tx = db.transaction("files");
-  tx.objectStore("files").getAll().onsuccess = e=>{
-    list.innerHTML="";
-    e.target.result.forEach(f=>{
-      const li=document.createElement("li");
-      li.textContent=f.name;
-      list.appendChild(li);
+async function load(){
+  return new Promise((res,rej)=>{
+    getAll(async arr=>{
+      list.innerHTML="";
+      for(const o of arr){
+        const b=await decryptBytes(o.pkg, MASTER).catch(()=>null);
+        if(!b) return rej();
+        const li=document.createElement("li");
+        li.textContent=o.name; list.appendChild(li);
+      }
+      res();
     });
-  }
+  });
 }
