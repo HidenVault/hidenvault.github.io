@@ -12,7 +12,6 @@ async function unlockWithPassword(){
   catch{ msg.textContent="Wrong password"; }
 }
 
-/* ---------- 保存 ---------- */
 async function save(){
   const f=file.files[0]; if(!f) return;
   const bytes=new Uint8Array(await f.arrayBuffer());
@@ -21,23 +20,22 @@ async function save(){
   loadAll();
 }
 
-/* ---------- フォルダ ---------- */
 function addFolder(){
   if(!newFolder.value) return;
   folders.push(newFolder.value);
   newFolder.value="";
-  renderFolders();
+  renderFoldersUI();
 }
-function renderFolders(){
-  folderSelect.innerHTML="";
+function renderFoldersUI(){
+  folderList.innerHTML="";
   folders.forEach(f=>{
-    const o=document.createElement("option");
-    o.value=f;o.textContent=f;
-    folderSelect.appendChild(o);
+    const li=document.createElement("li");
+    li.textContent=f;
+    li.onclick=()=>{currentFolder=f;showTrashMode=false;loadAll();}
+    folderList.appendChild(li);
   });
 }
 
-/* ---------- 表示 ---------- */
 function render(arr){
   list.innerHTML="";
   const q=search.value.toLowerCase();
@@ -49,16 +47,14 @@ function render(arr){
     return true;
   }).forEach(o=>{
     const li=document.createElement("li");
-    li.innerHTML=`${o.name}
-    <button onclick="exportOne('${o.name}')">⬇</button>
-    <button onclick="moveToTrash('${o.name}')">🗑</button>`;
+    li.innerHTML=`📄<br>${o.name}<br>
+      <button onclick="exportOne('${o.name}')">⬇</button>
+      <button onclick="moveToTrash('${o.name}')">🗑</button>`;
     list.appendChild(li);
   });
 }
 
 function showTrash(){ showTrashMode=!showTrashMode; loadAll(); }
-
-/* ---------- ゴミ箱 ---------- */
 function moveToTrash(name){
   getAll(arr=>{
     const f=arr.find(x=>x.name===name);
@@ -67,17 +63,14 @@ function moveToTrash(name){
   });
 }
 
-/* ---------- 読込 ---------- */
-async function loadAll(){
-  getAll(async arr=>{
+function loadAll(){
+  getAll(arr=>{
     folders=[...new Set(arr.map(a=>a.folder).concat(["root"]))];
-    renderFolders();
-    currentFolder=folderSelect.value||"root";
+    renderFoldersUI();
     render(arr);
   });
 }
 
-/* ---------- 書き出し ---------- */
 async function exportOne(name){
   getAll(async arr=>{
     const f=arr.find(x=>x.name===name);
